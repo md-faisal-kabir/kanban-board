@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuid } from "uuid";
+import "./index.css";
 
 const itemsFromBackEnd = [
   { id: uuid(), content: "1" },
@@ -9,15 +10,15 @@ const itemsFromBackEnd = [
 ];
 
 const columnsFromBackend = {
-  [uuid()]: {
+  toDo: {
     name: "Todo",
     items: itemsFromBackEnd,
   },
-  [uuid()]: {
+  onProgress: {
     name: "On Progress",
     items: [],
   },
-  [uuid()]: {
+  done: {
     name: "Done",
     items: [],
   },
@@ -61,11 +62,72 @@ const handleDragEnd = (result, columns, setColumns) => {
 
 function App() {
   const [columns, setColumns] = useState(columnsFromBackend);
+  const [newItem, setNewItem] = useState("");
+
+  const handleChange = (event) => {
+    setNewItem(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!newItem) return;
+    const column = columns["toDo"];
+    const itemsInTodo = [...column.items];
+    console.log(itemsInTodo);
+    const itemToPush = {
+      id: uuid(),
+      content: newItem,
+    };
+
+    itemsInTodo.push(itemToPush);
+    setColumns({
+      ...columns,
+      toDo: {
+        ...column,
+        items: [...itemsInTodo],
+      },
+    });
+    setNewItem("");
+  };
+
   return (
     <div
       style={{ display: "flex", alignItems: "center", flexDirection: "column" }}
     >
-      <h1> Kanban Board</h1>
+      <h1 style={{ color: "#46ACC2", marginBottom: "50px" }}> Kanban Board</h1>
+
+      <form
+        style={{
+          width: "70%",
+          marginBottom: "30px",
+        }}
+        onSubmit={(event) => handleSubmit(event)}
+      >
+        <input
+          type="text"
+          name="newItem"
+          style={{
+            width: "90%",
+            margin: "auto",
+            padding: "10px",
+          }}
+          value={newItem}
+          placeholder="add new issue here"
+          onChange={(event) => handleChange(event)}
+        ></input>
+        <input
+          type="submit"
+          style={{
+            padding: "12px 15px 12px 15px",
+            backgroundColor: "#498C8A",
+            border: "none",
+            width: "9%",
+            marginLeft: "5px",
+            color: "white",
+          }}
+        ></input>
+      </form>
+
       <div
         style={{ display: "flex", justifyContent: "center", height: "100%" }}
       >
